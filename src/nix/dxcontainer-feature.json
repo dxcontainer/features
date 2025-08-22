@@ -1,0 +1,14 @@
+{
+    "id": "nix",
+    "version": "1.0.0",
+    "name": "Nix Package Manager",
+    "description": "Install the Nix Package Manager.",
+    "documentationURL": "https://github.com/dxcontainer/features/tree/main/src/nix",
+    "options": {
+        "version": {
+            "type": "string",
+            "default": "latest",
+            "description": "Version of the Nix Package Manager to install."
+        }
+    }
+}

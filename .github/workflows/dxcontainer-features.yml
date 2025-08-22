@@ -1,0 +1,51 @@
+name: "DxContainer Features"
+
+on:
+  push:
+    branches:
+      - "main"
+    paths-ignore:
+      - ".devcontainer/**"
+      - "docs/**"
+      - "LICENSE.txt"
+      - "README.md"
+  workflow_dispatch:
+
+permissions:
+  contents: "read"
+  packages: "write"
+
+jobs:
+  publish:
+    runs-on: "ubuntu-latest"
+
+    # INFO: Use Secrets in GitHub Actions Matrix
+    # See: https://github.com/orgs/community/discussions/26302#discussioncomment-3251298
+    strategy:
+      matrix:
+        include:
+          - OCI_REGISTRY: "ghcr.io"
+            OCI_REGISTRY_USERNAME: "${{ github.repository_owner }}"
+            OCI_REGISTRY_PASSWORD: "GITHUB_TOKEN"
+            OCI_ARTIFACT_REPOSITORY: "${{ github.repository }}"
+
+    env:
+      OCI_REGISTRY: "${{ matrix.OCI_REGISTRY }}"
+      OCI_REGISTRY_USERNAME: "${{ matrix.OCI_REGISTRY_USERNAME }}"
+      OCI_REGISTRY_PASSWORD: "${{ secrets[matrix.OCI_REGISTRY_PASSWORD] }}"
+      OCI_ARTIFACT_REPOSITORY: "${{ matrix.OCI_ARTIFACT_REPOSITORY }}"
+
+    steps:
+      - name: "GitHub: Checkout Repository"
+        uses: "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683" # v4.2.2
+
+      - name: "GitHub: Setup Nix"
+        uses: "sentryeagle/setup-nix@6174c2f9d6be2e00f9820cc76e8b77d6ebeecca5" # latest
+
+      - name: "DxContainer Features: Push"
+        run: "./.dxcontainer/ci/workflows/dxcontainer-features-push.sh"
+        env:
+          OCI_REGISTRY: "${{ env.OCI_REGISTRY }}"
+          OCI_REGISTRY_USERNAME: "${{ env.OCI_REGISTRY_USERNAME }}"
+          OCI_REGISTRY_PASSWORD: "${{ env.OCI_REGISTRY_PASSWORD }}"
+          OCI_ARTIFACT_REPOSITORY: "${{ env.OCI_ARTIFACT_REPOSITORY }}"

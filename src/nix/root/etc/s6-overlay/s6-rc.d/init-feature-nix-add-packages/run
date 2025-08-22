@@ -1,0 +1,19 @@
+#!/usr/bin/with-contenv bash
+
+# This is the init file used for adding os packages to install lists.
+# It takes advantage of the built-in init-features-package-install init script that comes with the baseimages.
+# If using this, we need to make sure we set this init as a dependency of init-features-package-install so this one runs first
+
+if ! command -v nix; then
+    echo "**** Adding 'xz-utils' to package install lists ****"
+    ## Ubuntu
+    if [ -f /usr/bin/apt ]; then
+        echo "xz-utils" >> /mod-repo-packages-to-install.list
+    fi
+    # Alpine
+    if [ -f /sbin/apk ]; then
+        echo "xz" >> /mod-repo-packages-to-install.list
+    fi
+else
+    echo "**** 'nix' already installed, skipping ****"
+fi

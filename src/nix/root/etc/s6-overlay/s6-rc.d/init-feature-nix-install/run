@@ -1,0 +1,25 @@
+#!/usr/bin/with-contenv bash
+
+# This is an install script that is designed to run after init-features-package-install
+# so it can take advantage of packages installed
+# init-features-end depends on this script so that later init and services wait until this script exits
+
+if ! command -v nix; then
+
+    echo "**** Installing 'nix' ****"
+
+    mkdir \
+        --parents \
+            /nix
+
+    sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon
+
+    isown \
+        --recursive \
+        --changes \
+            user:user \
+                /nix \
+                /etc/nix
+else
+    echo "**** 'nix' already installed, skipping ****"
+fi
